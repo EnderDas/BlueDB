@@ -1,46 +1,42 @@
 #__init__
 
-__name__ = 'BlueDB'
 __version__ = '0.0.1'
 
-import pickle
+from pickle import Pickler, Unpickler
 
-class Blue(dict):
+class Blue_dict(dict):
+
+    def __init__(self, value, **kwargs):
+        super().__init__(**kwargs)
+# ^ this is something that will fix __setitem__ when it comes to nested dicts
+# not finished with it yet
+
+class Blue:
 
     def __init__(self, name, **kwargs):
-        super().__init__()
+
         self.name = name
-
-        self.__load__()
-
-        self.__attri__ = [] #for a attribute type system, no use for now
-
-    def __load__(self):
+        self.__vars__ = {}
         try:
-            data = pickle.load(open(f'{self.name}.blue', 'rb'))
-            self = data
+            with open(self.name, 'rb') as fp:
+                p = Unpickler(fp)
+                self.__vars__ = p.load().__vars__
         except:
-            pickle.dump(self, open(f'{self.name}.blue', 'wb'))
-            return
+            with open(self.name, 'wb') as fp:
+                p = Pickler(fp)
+                p.dump(self)
+                
+    def __repr__(self):
+        return str(self.__vars__)
 
-    def __setitem__(self, name, value):
+    def __setitem__(self, key, value):
+        self.__vars__[key] = value
+        with open(self.name, 'wb') as fp:
+            p = Pickler(fp)
+            p.dump(self)
 
-        self.__dict__[name] = value
-        self[name] = value
-
-        with open(f'{self.name}.blue', 'wb') as thing:
-            pickle.dump(self, thing)
-
-    def __getitem__(self, name): #Too many try/excepts for me too look at...
-        try:
-            return self[name]
-        except:
-            try:
-                return self.__dict__[name]
-            except:
-                try:
-                    with open(f'{self.name}.blue', 'rb') as thing:
-                        thingy = pickle.load(thing)
-                    return thingy.__dict__[name]
-                except:
-                    raise KeyError(f"Key '{name}' does not exist.")
+    def __getitem__(self, key):
+        with open(self.name, 'rb') as fp:
+            p = Unpickler(fp)
+            data = p.load().__vars__[key]
+        return data
