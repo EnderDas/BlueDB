@@ -1,6 +1,6 @@
 #__init__
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 from pickle import Pickler, Unpickler
 
@@ -57,6 +57,13 @@ class Blue:
             except:
                 raise KeyError(f"Key '{key}' does not exist.")
 
+    def __delitem__(self, key):
+        del self.__vars__[key]
+        with open(f'{self.name}.blue', 'wb') as thing:
+            p = Pickler(thing, protocol = 4)
+            p.dump(self)
+        self.__base_reload__()
+
     def __base_reload__(self):
         #VERY MESSY
         better_blue = Blue(self.name)
@@ -75,7 +82,14 @@ class Blue_dict:
     def __init__(self, key, value, previous, core, **kwargs):
         self.__key__ = key
         self.__previous__ = previous
-        self.__vars__ = dict(value)
+        if len(value) > 0:
+            for i in value.keys():
+                if type(value[i]) == dict:
+                    self.__setitem__(i, value[i])
+                else:
+                    self.__vars__[i] = value[i]
+        else:
+            self.__vars__ = dict(value)
         self.__blues__ = []
         self.__core__ = core
 
@@ -88,6 +102,15 @@ class Blue_dict:
         else:
             self.__vars__[name] = value
             self.__previous__.__setitem__(self.__key__, self.__vars__)
+
+    def __delitem__(self, name):
+        del self.__vars__[name]
+
+    def __iter__(self):
+        return iter(self.__vars__)
+
+    def __len__(self):
+        return len(self.__vars__)
 
     def __repr__(self):
         return str(self.__vars__)
