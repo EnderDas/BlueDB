@@ -1,6 +1,6 @@
 #__init__
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 from pickle import Pickler, Unpickler
 
@@ -83,6 +83,7 @@ class Blue_dict:
         self.__key__ = key
         self.__previous__ = previous
         if len(value) > 0:
+            self.__vars__ = {}
             for i in value.keys():
                 if type(value[i]) == dict:
                     self.__setitem__(i, value[i])
@@ -115,8 +116,17 @@ class Blue_dict:
     def __repr__(self):
         return str(self.__vars__)
 
-    def __str__(self):
-        return str(self.__vars__)
-
     def __getitem__(self, name):
         return self.__vars__[name]
+
+class Blue_list:
+
+    def __init__(self, key, value, previous, core, **kwargs):
+        raise NotImplementedError
+        self.__key__ = key #indice
+        self.__vars__ = list(value)
+        self.__blues__ = {}
+        self.__core__ = core
+
+    def __repr__(self):
+        return str(self.__vars__)
