@@ -1,8 +1,8 @@
 #__init__
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
-from pickle import Pickler, Unpickler
+from _pickle import Pickler, Unpickler
 
 class Blue:
 
@@ -21,7 +21,7 @@ class Blue:
                 self.__loaded__ = q
         except:
             with open(f'{self.name}.blue', 'wb') as fp:
-                p = Pickler(fp, protocol = 4)
+                p = Pickler(fp)
                 p.dump(self)
 
     def __repr__(self):
@@ -33,12 +33,12 @@ class Blue:
             self.__vars__[key] = blue
             self.__blues__[key] = blue
             with open(f'{self.name}.blue', 'wb') as fp:
-                p = Pickler(fp, protocol = 4)
+                p = Pickler(fp)
                 p.dump(self)
         else:
             self.__vars__[key] = value
             with open(f'{self.name}.blue', 'wb') as fp:
-                p = Pickler(fp, protocol = 4)
+                p = Pickler(fp)
                 p.dump(self)
         self.__base_reload__()
 
@@ -60,7 +60,7 @@ class Blue:
     def __delitem__(self, key):
         del self.__vars__[key]
         with open(f'{self.name}.blue', 'wb') as thing:
-            p = Pickler(thing, protocol = 4)
+            p = Pickler(thing)
             p.dump(self)
         self.__base_reload__()
 
@@ -82,6 +82,8 @@ class Blue_dict:
     def __init__(self, key, value, previous, core, **kwargs):
         self.__key__ = key
         self.__previous__ = previous
+        self.__core__ = core
+        self.__blues__ = {}
         if len(value) > 0:
             self.__vars__ = {}
             for i in value.keys():
@@ -91,14 +93,13 @@ class Blue_dict:
                     self.__vars__[i] = value[i]
         else:
             self.__vars__ = dict(value)
-        self.__blues__ = []
-        self.__core__ = core
+
 
     def __setitem__(self, name, value):
         if type(value) is dict:
             blue = Blue_dict(name, value, self, self.__core__)
             self.__vars__[name] = blue
-            self.__blues__.append(blue)
+            self.__blues__[name] = blue
             self.__previous__.__setitem__(self.__key__, self.__vars__)
         else:
             self.__vars__[name] = value
