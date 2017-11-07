@@ -66,9 +66,9 @@ if __name__ == '__main__':
     start = timer()
     b = Blue('test')
     b['l'] = {'a': 1}
-    print(b)
+    print(b['l'])
     b['l']['a'] = 2
-    print(b)
+    print(b['l'])
     end = timer()
     print('blue', end-start)
     os.remove('test.bak')
