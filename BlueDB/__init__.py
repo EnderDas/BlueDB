@@ -1,133 +1,77 @@
-#__init__
-
-__version__ = '0.1.3'
-
-from _pickle import Pickler, Unpickler
+#Better BlueDB
+try:
+    import ujson as json
+except:
+    import json
 
 class Blue:
 
-    def __init__(self, name, **kwargs):
-
+    def __init__(self, name, path = None, **kwargs):
         self.name = name
-        self.__vars__ = {}
-        self.__blues__ = {}
+        self.file = self.name+'.blue'
+
+        self._load = kwargs.pop('load', json.load)
+        self._dump = kwargs.pop('dump', json.dump)
 
         try:
-            with open(f'{self.name}.blue', 'rb') as fp:
-                p = Unpickler(fp)
-                q = p.load()
-                self.__vars__ = q.__vars__
-                self.__blues__ = q.__blues__
-                self.__loaded__ = q
+            with open(self.file, 'r') as fp:
+                data = self._load(fp)
+            self.super_ = data
+            self.items_ = self.super_['items']
         except:
-            with open(f'{self.name}.blue', 'wb') as fp:
-                p = Pickler(fp)
-                p.dump(self)
-
-    def __repr__(self):
-        return str(self.__vars__)
-
-    def __setitem__(self, key, value):
-        if type(value) is dict:
-            blue = Blue_dict(key, value, self, self)
-            self.__vars__[key] = blue
-            self.__blues__[key] = blue
-            with open(f'{self.name}.blue', 'wb') as fp:
-                p = Pickler(fp)
-                p.dump(self)
-        else:
-            self.__vars__[key] = value
-            with open(f'{self.name}.blue', 'wb') as fp:
-                p = Pickler(fp)
-                p.dump(self)
-        self.__base_reload__()
+            with open(self.file, 'w') as fp:
+                self._dump({}, fp)
+            self.super_ = {'name': self.name, 'items': {}}
+            self.items_ = {}
 
     def __getitem__(self, key):
         try:
-            return self.__vars__[key]
+            return self.items_[key]
         except:
-            try:
-                with open(f'{self.name}.blue', 'rb') as fp:
-                    p = Unpickler(fp)
-                    data = p.load().__vars__.get(key)
-                if data is None:
-                    raise
-                else:
-                    return data
-            except:
-                raise KeyError(f"Key '{key}' does not exist.")
+            with open(self.file, 'r') as fp:
+                data = self._load(fp)['items']
+                return data[key]
+
+    def __setitem__(self, key, value):
+        self.items_[key] = value
+        self.super_['items'][key] = value
+        with open(self.file, 'w') as fp:
+            self._dump(self.super_, fp)
 
     def __delitem__(self, key):
-        del self.__vars__[key]
-        with open(f'{self.name}.blue', 'wb') as thing:
-            p = Pickler(thing)
-            p.dump(self)
-        self.__base_reload__()
-
-    def __base_reload__(self):
-        #VERY MESSY
-        better_blue = Blue(self.name)
-        for l in better_blue.__vars__.keys():
-            for i in self.__vars__.keys():
-                if l == i:
-                    if self.__vars__[i] == better_blue.__vars__[i]:
-                        pass
-                    else:
-                        self.__vars__[i] = better_blue.__vars__[i]
-                else:
-                    pass
-
-class Blue_dict:
-
-    def __init__(self, key, value, previous, core, **kwargs):
-        self.__key__ = key
-        self.__previous__ = previous
-        self.__core__ = core
-        self.__blues__ = {}
-        if len(value) > 0:
-            self.__vars__ = {}
-            for i in value.keys():
-                if type(value[i]) == dict:
-                    self.__setitem__(i, value[i])
-                else:
-                    self.__vars__[i] = value[i]
-        else:
-            self.__vars__ = dict(value)
-
-
-    def __setitem__(self, name, value):
-        if type(value) is dict:
-            blue = Blue_dict(name, value, self, self.__core__)
-            self.__vars__[name] = blue
-            self.__blues__[name] = blue
-            self.__previous__.__setitem__(self.__key__, self.__vars__)
-        else:
-            self.__vars__[name] = value
-            self.__previous__.__setitem__(self.__key__, self.__vars__)
-
-    def __delitem__(self, name):
-        del self.__vars__[name]
-
-    def __iter__(self):
-        return iter(self.__vars__)
-
-    def __len__(self):
-        return len(self.__vars__)
+        del self.items_[key]
+        del self.super_['items'][key]
+        with open(self.file, 'w') as fp:
+            self._dump(self.super_, fp)
 
     def __repr__(self):
-        return str(self.__vars__)
+        return str(self.items_)
 
-    def __getitem__(self, name):
-        return self.__vars__[name]
+    def __str__(self):
+        return str(self.items_)
 
-class Blue_list:
-
-    def __init__(self, key, value, previous, core, **kwargs):
-        raise NotImplementedError
-        self.__key__ = key #indice
-        self.__vars__ = list(value)
-        self.__blues__ = {}
-        self.__core__ = core
-
-    def __repr__(self):
-        return str(self.__vars__)
+if __name__ == '__main__':
+    from timeit import default_timer as timer
+    import shelve
+    import os
+    start = timer()
+    s = shelve.open('test', writeback = True)
+    s['l'] = {'a': 1}
+    print(s['l'])
+    s['l']['a'] = 2
+    print(s['l'])
+    s.close()
+    end = timer()
+    print('shelve', end-start)
+    start = timer()
+    b = Blue('test')
+    b['l'] = {'a': 1}
+    print(b)
+    b['l']['a'] = 2
+    print(b)
+    end = timer()
+    print('blue', end-start)
+    os.remove('test.bak')
+    os.remove('test.blue')
+    os.remove('test.dat')
+    os.remove('test.dir')
