@@ -11,3 +11,7 @@ nested value
 >>> print(database)
 {'key': {'nested key': 'new value'}}
 ```
+
+##
+
+`py -m pip install BlueDB` to install it then import `Blue` class and you're good to go!
