@@ -1,8 +1,8 @@
 #Better BlueDB
 
-__version__ = '0.2.1'
+__version__ = '0.2.3'
 
-import _pickle as pickle
+import _pickle
 from collections.abc import MutableSequence, MutableMapping
 
 """
@@ -21,16 +21,20 @@ Current problems...
     and then updates any instances. This would be slow as hell tho...
 """
 
+__all__ = ['Blue']
 
 class Blue(MutableMapping):
 
-    def __init__(self, name, path = None, **kwargs):
+    def __init__(self, name, **kwargs):
+        """
+        NeSTeD dIctS aND lISt!!!!
+        """
         super().__init__()
         self.name = name
         self.file = self.name+'.blue'
 
-        self.load_ = kwargs.pop('load', pickle.load)
-        self.dump_ = kwargs.pop('dump', pickle.dump)
+        self.load_ = kwargs.pop('load', _pickle.load)
+        self.dump_ = kwargs.pop('dump', _pickle.dump)
 
         self.body = {}
 
@@ -39,10 +43,10 @@ class Blue(MutableMapping):
                 data = self.load_(fp)
                 for i in data.body.keys():
                     if type(data.body[i]) is dict:
-                        blue = BlueDict(i, data.body[i], self)
+                        blue = _BlueDict(i, data.body[i], self)
                         self.body[i] = blue
                     elif type(data.body[i]) is list:
-                        blue = BlueList(i, data.body[i], self)
+                        blue = _BlueList(i, data.body[i], self)
                         self.body[i] = blue
                     else:
                         self.body[i] = data.body[i]
@@ -61,10 +65,10 @@ class Blue(MutableMapping):
 
     def __setitem__(self, key, value):
         if type(value) is dict:
-            blue = BlueDict(key, value, self)
+            blue = _BlueDict(key, value, self)
             self.body[key] = blue
         elif type(value) is list:
-            blue = BlueList(key, value, self)
+            blue = _BlueList(key, value, self)
             self.body[key] = blue
         else:
             self.body[key] = value
@@ -88,7 +92,10 @@ class Blue(MutableMapping):
     def __str__(self):
         return str(self.body)
 
-class BlueDict(MutableMapping):
+    def __hash__(self):
+        return hash(frozenset(self.body.items()))
+
+class _BlueDict(MutableMapping):
 
     def __init__(self, key, value, previous):
         super().__init__()
@@ -116,10 +123,10 @@ class BlueDict(MutableMapping):
 
     def __setitem__(self, key, value):
         if type(value) is dict:
-            blue = BlueDict(key, value, self)
+            blue = _BlueDict(key, value, self)
             self.body[key] = blue
         elif type(value) is list:
-            blue = BlueList(key, value, self)
+            blue = _BlueList(key, value, self)
             self.body[key] = blue
         else:
             self.body[key] = value
@@ -138,7 +145,10 @@ class BlueDict(MutableMapping):
     def __str__(self):
         return str(self.body)
 
-class BlueList(MutableSequence):
+    def __hash__(self):
+        return hash(frozenset(self.body.items()))
+
+class _BlueList(MutableSequence):
 
     def __init__(self, key, body, previous):
         super().__init__()
@@ -150,9 +160,9 @@ class BlueList(MutableSequence):
 
     def __setitem__(self, index, value):
         if type(value) is dict:
-            blue = BlueDict(index, value, self)
+            blue = _BlueDict(index, value, self)
         elif type(value) is list:
-            blue = BlueList(index, value, self)
+            blue = _BlueList(index, value, self)
             self.body.__setitem__(index, value)
         self.body.__setitem__(index, value)
         self.previous.__setitem__(self.key, self)
@@ -171,3 +181,9 @@ class BlueList(MutableSequence):
 
     def __repr__(self):
         return str(self.body)
+
+    def __str__(self):
+        return str(self.body)
+
+    def __hash__(self):
+        return hash(frozenset(self.body.items()))
