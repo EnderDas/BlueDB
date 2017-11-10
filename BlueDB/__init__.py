@@ -51,7 +51,7 @@ class Blue(MutableMapping):
                     else:
                         self.body[i] = data.body[i]
         except:
-            self.dump_(self, open(self.file, 'wb'))
+            self.dump_(self, open(self.file, 'wb'), protocol = 4)
             self.body = {}
 
     def __getitem__(self, key):
@@ -73,12 +73,12 @@ class Blue(MutableMapping):
         else:
             self.body[key] = value
         with open(self.file, 'wb') as fp:
-            self.dump_(self, fp)
+            self.dump_(self, fp, protocol = 4)
 
     def __delitem__(self, key):
         del self.body[key]
         with open(self.file, 'wb') as fp:
-            self.dump_(self, fp)
+            self.dump_(self, fp, protocol = 4)
 
     def __iter__(self):
         return iter(self.body)
