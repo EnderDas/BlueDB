@@ -1,5 +1,5 @@
 import ujson
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, MutableSequence
 
 class Blue(MutableMapping):
 
@@ -11,7 +11,15 @@ class Blue(MutableMapping):
         try:
             with open(self.file, 'r') as fp:
                 data = ujson.load(fp)
-                self.body = data
+                for i in data.keys():
+                    if type(data[i]) is dict:
+                        blue = _BlueDict(i, data[i], self)
+                        self.body[i] = data[i]
+                    elif type(data[i]) is list:
+                        blue = _BlueList(i, data[i], self)
+                        self.body[i] = data[i]
+                    else:
+                        self.body[i] = data[i]
         except:
             with open(self.file, 'w') as fp:
                 ujson.dump({}, fp)
@@ -29,7 +37,14 @@ class Blue(MutableMapping):
         return iter(self.body)
 
     def __setitem__(self, key, value):
-        self.body[key] = value
+        if type(value) is dict:
+            blue = _BlueDict(key, value, self)
+            self.body[key] = value
+        elif type(value) is list:
+            blue = _BlueList(key, value, self)
+            self.body[key] = value
+        else:
+            self.body[key] = value
         with open(self.file, 'w') as fp:
             ujson.dump(self.body, fp)
 
@@ -55,7 +70,10 @@ class _BlueDict(MutableMapping):
         self.previous = previous
         for i in value.keys():
             if type(value[i]) is dict:
-                blue = _BlueDict(i, value[i])
+                blue = _BlueDict(i, value[i], self)
+                self.body[i] = blue
+            elif type(value[i]) is list:
+                blue = _BlueList(i, value[i], self)
                 self.body[i] = blue
             else:
                 self.body[i] = value[i]
@@ -74,7 +92,10 @@ class _BlueDict(MutableMapping):
 
     def __setitem__(self, key, value):
         if type(value) is dict:
-            blue = _BlueDict(key, value)
+            blue = _BlueDict(key, value, self)
+            self.body[key] = blue
+        elif type(value) is list:
+            blue = _BlueList(key, value, self)
             self.body[key] = blue
         else:
             self.body[key] = value
@@ -90,7 +111,7 @@ class _BlueList(MutableSequence):
 
     def __init__(self, key, value, previous):
         self.key = key
-        self.body = {}
+        self.body = []
         self.previous = previous
 
         for i in value:
@@ -112,4 +133,19 @@ class _BlueList(MutableSequence):
         if type(value) is dict:
             blue = _BlueDict(index, value, self)
             self.body[index] = value
-        elif type(value)
+        elif type(value) is list:
+            blue = _BlueList(index, value, self)
+            self.body[index] = value
+        else:
+            self.body[index] = value
+        self.previous.__setitem__(self.key, self.body)
+
+    def __getitem__(self, index):
+        return self.body[key]
+
+    def __delitem__(self, index):
+        del self.body[key]
+        self.previous.__setitem__(self.key, self.body)
+
+    def insert(self, index, value):
+        self.body.insert(index, value)
