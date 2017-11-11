@@ -1,4 +1,5 @@
 [![PyPI version](https://badge.fury.io/py/BlueDB.svg)](https://badge.fury.io/py/BlueDB) 
+[![GitHub version](https://badge.fury.io/gh/Enderdas%2FBlueDB.svg)](https://badge.fury.io/gh/Enderdas%2FBlueDB)
 # BlueDB
 *use my database, is good!*
 
