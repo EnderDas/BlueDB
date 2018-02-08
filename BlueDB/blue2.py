@@ -7,7 +7,6 @@ class Blue(MutableMapping):
         self.name = name
         self.file = name+'.blue'
         self.body = {}
-        self.cache = {}
         try:
             with open(self.file, 'r') as fp:
                 data = ujson.load(fp)

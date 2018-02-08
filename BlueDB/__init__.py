@@ -1,6 +1,6 @@
 #Better BlueDB
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 
 import _pickle
 from collections.abc import MutableSequence, MutableMapping
