@@ -36,6 +36,14 @@ Currently Blue2 is smaller and much cleaner than BlueDB, but not as complete as 
 {'key': 'some value'}
 ```
 
+### Blue3
+
+Blue3 is a subset of BlueDB also using [ujson](https://github.com/esnme/ultrajson). 
+>Will Likely replace the default BlueDB in v1
+
+#### About
+Blue3 will fix the problem of handling large databases and datasets, it will also fix the problem of loading mutiple databases at the same time with the same name and being able to access the same data from all of them.
+
 ### Benchmarks
 
 The current speed benchmarks are based upon setting a dict from a 4Mb .json file and then getting that dict back. The libs that are compared are, BlueDB, BlueDB(Blue2), Chest, and buitlin Shelve.  BlueDB isnt great for parsing large librarys hense the reason im working on Blue2.
