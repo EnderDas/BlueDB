@@ -1,15 +1,21 @@
-import ujson
+try:
+    import ujson as json
+except:
+    try:
+        import rapidjson as json
+    except:
+        import json
 from collections.abc import MutableMapping, MutableSequence
 
 class Blue(MutableMapping):
 
     def __init__(self, name):
         self.name = name
-        self.file = name+'.blue'
+        self.file = name+'.blu2'
         self.body = {}
         try:
             with open(self.file, 'r') as fp:
-                data = ujson.load(fp)
+                data = json.load(fp)
                 for i in data.keys():
                     if type(data[i]) is dict:
                         blue = _BlueDict(i, data[i], self)
@@ -21,7 +27,7 @@ class Blue(MutableMapping):
                         self.body[i] = data[i]
         except:
             with open(self.file, 'w') as fp:
-                ujson.dump({}, fp)
+                json.dump({}, fp)
 
     def __repr__(self):
         return str(self.body)
@@ -45,21 +51,21 @@ class Blue(MutableMapping):
         else:
             self.body[key] = value
         with open(self.file, 'w') as fp:
-            ujson.dump(self.body, fp)
+            json.dump(self.body, fp)
 
     def __getitem__(self, key):
         try:
             return self.body[key]
         except:
             with open(self.file, 'r') as fp:
-                data = ujson.load(fp)
+                data = json.load(fp)
                 self.body[key] = data[key]
             return self.body[key]
 
     def __delitem__(self, key):
         del self.body[key]
         with open(self.file, 'w') as fp:
-            ujson.dump(self.body, fp)
+            json.dump(self.body, fp)
 
 class _BlueDict(MutableMapping):
 

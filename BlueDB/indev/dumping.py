@@ -1,4 +1,9 @@
 #blue
+"""
+STATUS: FINISHED
+CURRENT BUILD: dumping
+FINAL BUILD: Blue3
+"""
 
 import ujson
 import sys
@@ -8,7 +13,7 @@ class Blue:
 
     def __init__(self, name):
         self.name = name
-        self.file = name+'.bdb2'
+        self.file = name+'.bluI1'
 
         self.cache = {}
 
