@@ -38,21 +38,9 @@ nested value
 
 ```
 
-<<<<<<< HEAD
 *Blue2 can use Builtin JSON, UltraJSON or RapidJSON*
 
 ### Blue3
-=======
-### Blue3
-
-Blue3 is a subset of BlueDB also using [ujson](https://github.com/esnme/ultrajson). 
->Will Likely replace the default BlueDB in v1
-
-#### About
-Blue3 will fix the problem of handling large databases and datasets, it will also fix the problem of loading mutiple databases at the same time with the same name and being able to access the same data from all of them.
-
-### Benchmarks
->>>>>>> 1f98b0f10d8b863bb5ae39f0512f0957467be6d6
 
 > [Blue3](BlueDB/blue3.py) ~ A BlueDB superset
 
