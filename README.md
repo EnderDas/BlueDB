@@ -1,8 +1,7 @@
 [![PyPI version](https://badge.fury.io/py/BlueDB.svg)](https://badge.fury.io/py/BlueDB)
 [![GitHub version](https://badge.fury.io/gh/Enderdas%2FBluedb.svg)](https://badge.fury.io/gh/Enderdas%2FBluedb)
 
-*oopsy*
-Version 0.3.0.3 on PyPi had problems with the setup file and caused it to not download, very sorry, everything should be fixed now...
+> Oopsy... Version 0.3.0.3 on PyPi had problems with the setup file and caused it to not download, very sorry, everything should be fixed now...
 
 # BlueDB
 *use my database, is good!*
