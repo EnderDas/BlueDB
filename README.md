@@ -1,3 +1,5 @@
+this project is no longer maintained, probably doesn't work... apologies.
+
 [![PyPI version](https://badge.fury.io/py/BlueDB.svg)](https://badge.fury.io/py/BlueDB)
 [![GitHub version](https://badge.fury.io/gh/Enderdas%2FBluedb.svg)](https://badge.fury.io/gh/Enderdas%2FBluedb)
 
